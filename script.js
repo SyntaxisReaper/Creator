@@ -219,7 +219,7 @@
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const lines = [
       '$ whoami',
-      'FreelanceDeveloper & CodeGeneralist',
+      'Freelance Developer & Code Generalist',
       '$ ls -la skills/',
       'drwxr-xr-x  HTML & CSS      4yrs',
       'drwxr-xr-x  Java            3years',
@@ -264,5 +264,81 @@
       });
     }, { threshold: 0.25 });
     codeObs.observe(codeBox);
+  }
+
+  // Canvas star particles with soft collisions
+  const canvas = document.getElementById('bg-canvas');
+  if (canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ctx = canvas.getContext('2d');
+    let w = 0, h = 0, dpr = 1;
+    function resizeCanvas() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth = window.innerWidth;
+      h = canvas.clientHeight = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let STAR_COUNT = Math.max(50, Math.min(100, Math.floor(Math.max(w, h) / 14)));
+    const stars = Array.from({ length: STAR_COUNT }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      r: Math.random() * 1.2 + 0.4
+    }));
+
+    const mouse = { x: -9999, y: -9999, active: false };
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+    window.addEventListener('mouseleave', () => { mouse.active = false; });
+
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+
+      // Update and draw stars
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      for (const s of stars) {
+        if (mouse.active) {
+          const dx = s.x - mouse.x; const dy = s.y - mouse.y;
+          const dist2 = dx*dx + dy*dy;
+          const influence = dist2 > 1 ? Math.min(80000 / dist2, 0.25) : 0;
+          s.vx += (dx > 0 ? 1 : -1) * 0.0005 * influence;
+          s.vy += (dy > 0 ? 1 : -1) * 0.0005 * influence;
+        }
+        s.x += s.vx; s.y += s.vy;
+        if (s.x < 0 || s.x > w) s.vx *= -1;
+        if (s.y < 0 || s.y > h) s.vy *= -1;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Connections and soft collisions
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const a = stars[i], b = stars[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx*dx + dy*dy;
+          const maxDist = 120;
+          if (d2 < maxDist * maxDist) {
+            const alpha = 1 - Math.sqrt(d2) / maxDist;
+            ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.35})`;
+            ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+
+            // tiny spark when very close
+            if (d2 < 22 * 22) {
+              const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
+              ctx.fillStyle = 'rgba(167,139,250,0.6)';
+              ctx.beginPath(); ctx.arc(cx, cy, 1.8, 0, Math.PI * 2); ctx.fill();
+              const ax = dx * 0.002, ay = dy * 0.002; a.vx += ax; a.vy += ay; b.vx -= ax; b.vy -= ay;
+            }
+          }
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   }
 })();

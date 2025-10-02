@@ -162,6 +162,9 @@ body {
   radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,.5), rgba(255,255,255,0)) 0 0/220px 220px; animation: starScroll 120s linear infinite; }
 @keyframes starScroll { from { background-position: 0 0, 0 0, 0 0; } to { background-position: -2000px 0, -1200px 0, -1600px 0; } }
 
+/* Canvas particle layer (above starfield, below blobs) */
+.bg-canvas { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
