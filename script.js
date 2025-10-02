@@ -211,4 +211,58 @@
       }
     });
   }
+
+  // Code box typing effect (skills & experience)
+  const codeBox = document.getElementById('code-box');
+  const codeOut = document.getElementById('code-output');
+  if (codeBox && codeOut) {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lines = [
+      '$ whoami',
+      'FreelanceDeveloper & CodeGeneralist',
+      '$ ls -la skills/',
+      'drwxr-xr-x  HTML & CSS      4yrs',
+      'drwxr-xr-x  Java            3years',
+      'drwxr-xr-x  React           2months',
+      'drwxr-xr-x  Python          3months'
+    ];
+
+    function startTyping() {
+      if (prefersReduced) {
+        codeOut.textContent = lines.join('\n');
+        return;
+      }
+      const textNode = document.createTextNode('');
+      const caret = document.createElement('span');
+      caret.className = 'caret';
+      codeOut.appendChild(textNode);
+      codeOut.appendChild(caret);
+
+      let li = 0, ci = 0;
+      function step() {
+        if (li >= lines.length) return; // done
+        const current = lines[li];
+        if (ci <= current.length) {
+          textNode.data = lines.slice(0, li).join('\n') + (li ? '\n' : '') + current.slice(0, ci);
+          ci++;
+          setTimeout(step, current[ci-2] === ' ' ? 15 : 24);
+        } else {
+          // line complete
+          li++; ci = 0;
+          if (li < lines.length) setTimeout(step, 280); // pause between lines
+        }
+      }
+      step();
+    }
+
+    const codeObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          startTyping();
+          codeObs.unobserve(codeBox);
+        }
+      });
+    }, { threshold: 0.25 });
+    codeObs.observe(codeBox);
+  }
 })();
