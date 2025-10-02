@@ -122,6 +122,34 @@
     });
   }
 
+  // Mobile navigation toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const navMenu = document.getElementById('nav-menu');
+  function setMenu(open) {
+    if (!navToggle || !navMenu) return;
+    navToggle.setAttribute('aria-expanded', String(open));
+    navMenu.classList.toggle('open', open);
+    document.body.classList.toggle('no-scroll', open);
+  }
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
+      setMenu(!isOpen);
+    });
+    // Close menu when a nav link is clicked
+    navMenu.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => setMenu(false));
+    });
+    // Close on escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setMenu(false);
+    });
+    // Reset on resize to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) setMenu(false);
+    });
+  }
+
   // Auto-gallery loader: looks for images named images/gallery-01.png, gallery-02.jpg, etc.
   const galleryContainer = document.getElementById('gallery-grid');
   if (galleryContainer) {
