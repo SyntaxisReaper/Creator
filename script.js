@@ -30,26 +30,43 @@
     })(0);
   }
 
-  // Animate skill bars when section is visible
+  // Animate skill bars individually when they enter view
   const skillSection = document.getElementById('skills');
   if (skillSection) {
-    const bars = skillSection.querySelectorAll('.fill');
+    const fills = skillSection.querySelectorAll('.fill');
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Initialize bars at 0 so the animation is guaranteed to be visible when revealed
+    fills.forEach((f) => {
+      const target = getComputedStyle(f).getPropertyValue('--val').trim() || '0%';
+      if (prefersReduced) {
+        f.style.width = target;
+      } else {
+        f.style.width = '0%';
+      }
+    });
+
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
+        const el = e.target;
         if (e.isIntersecting) {
-          bars.forEach((b) => {
-            const target = getComputedStyle(b).getPropertyValue('--val');
-            b.style.width = '0%';
-            requestAnimationFrame(() => {
-              // next frame to allow transition to play
-              b.style.width = target.trim();
-            });
-          });
-          obs.unobserve(skillSection);
+          const target = getComputedStyle(el).getPropertyValue('--val').trim() || '0%';
+          if (prefersReduced) {
+            el.style.width = target;
+            obs.unobserve(el);
+            return;
+          }
+          el.classList.add('animated');
+          // ensure starting point
+          el.style.width = getComputedStyle(el).width === target ? '0%' : el.style.width;
+          void el.offsetWidth; // force reflow
+          requestAnimationFrame(() => { el.style.width = target; });
+          el.addEventListener('transitionend', () => el.classList.remove('animated'), { once: true });
+          obs.unobserve(el);
         }
       });
-    }, { threshold: 0.2 });
-    obs.observe(skillSection);
+    }, { threshold: 0.15 });
+    fills.forEach((f) => obs.observe(f));
   }
 
   // Custom cursor that follows the mouse
