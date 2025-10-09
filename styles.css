@@ -132,6 +132,14 @@ body {
 .fill.animated::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(120deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.25) 40%, rgba(255,255,255,.0) 70%); background-size: 200% 100%; animation: progressSlide 1.2s ease-in-out infinite; mix-blend-mode: overlay; }
 @keyframes progressSlide { 0% { background-position: -100% 0; } 100% { background-position: 100% 0; } }
 
+/* Quote & Highlights */
+.quote { margin: 18px 0 8px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.06); backdrop-filter: blur(6px); font-style: italic; color: var(--text); box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+.highlights { margin-top: 14px; }
+.highlights-title { margin: 8px 0 8px; font-size: 18px; color: var(--muted); }
+.highlights-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.highlights-list li { padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.05); }
+@media (max-width: 800px) { .highlights-list { grid-template-columns: 1fr; } }
+
 /* Contact */
 .contact-form { display: grid; gap: 14px; margin-top: 10px; }
 .field { display: grid; gap: 6px; }
