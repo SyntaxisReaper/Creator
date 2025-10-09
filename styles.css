@@ -137,7 +137,13 @@ body {
 .highlights { margin-top: 14px; }
 .highlights-title { margin: 8px 0 8px; font-size: 18px; color: var(--muted); }
 .highlights-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-.highlights-list li { padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.05); }
+.highlights-list li { position: relative; padding: 10px 12px 10px 40px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.05); transition: transform .15s ease, background .2s ease; }
+.highlights-list li:hover { transform: translateY(-2px); background: rgba(255,255,255,.07); }
+.highlights-list li strong { display: inline-block; margin-right: 6px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #0b0b12; background: linear-gradient(135deg, rgba(110,231,249,.9), rgba(167,139,250,.9)); border: 1px solid rgba(255,255,255,.35); }
+.highlights-list li::before { content: "•"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+/* Specific icons for categories */
+.highlights-list li.tag-leadership::before { content: "🏆"; font-size: 16px; }
+.highlights-list li.tag-workshops::before { content: "🛠️"; font-size: 16px; }
 @media (max-width: 800px) { .highlights-list { grid-template-columns: 1fr; } }
 
 /* Collapsible panel (details/summary) */
