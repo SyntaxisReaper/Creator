@@ -175,6 +175,7 @@
 
     // Map specific gallery items to external project links
     const projectLinks = {
+      'gallery-01': { url: 'https://vcaas.vercel.app/', title: 'VCaaS - Voice Clone as a Service' },
       'gallery-02': { url: 'https://travelogy-3p9x.vercel.app', title: 'TraveLogy' }
     };
 
