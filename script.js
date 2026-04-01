@@ -233,10 +233,13 @@
       '$ whoami',
       'Freelance Developer & Code Generalist',
       '$ ls -la skills/',
-      'drwxr-xr-x  HTML & CSS      4yrs',
-      'drwxr-xr-x  Java            3years',
-      'drwxr-xr-x  React           2months',
-      'drwxr-xr-x  Python          3months'
+      'drwxr-xr-x  HTML & CSS      4 yrs',
+      'drwxr-xr-x  Java            5 years',
+      'drwxr-xr-x  React           1 year',
+      'drwxr-xr-x  Python          1 year',
+      'drwxr-xr-x  Javascript      1 year',
+      'drwxr-xr-x  MySQL           1 year',
+      'drwxr-xr-x  MongoDb         1 year'
     ];
 
     function startTyping() {
