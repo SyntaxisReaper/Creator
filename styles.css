@@ -1266,3 +1266,16 @@ body {
 .gallery-item:hover .project-badge {
   transform: translateY(-1px);
 }
+
+/* ── Contact Form Status ─────────────────────────────────────────────────── */
+.form-status {
+  margin-top: 15px;
+  font-size: 14px;
+  min-height: 20px;
+}
+.form-status.success {
+  color: #10b981;
+}
+.form-status.error {
+  color: #ef4444;
+}

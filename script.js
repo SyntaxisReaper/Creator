@@ -495,6 +495,57 @@
     });
   });
 
+  // ── Contact form submission ───────────────────────────────────────────────
+  const contactForm = document.getElementById('contact-form');
+  const formStatus = document.getElementById('form-status');
+  if (contactForm && formStatus) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const name = contactForm.querySelector('#name').value.trim();
+      const email = contactForm.querySelector('#email').value.trim();
+      const message = contactForm.querySelector('#message').value.trim();
+
+      if (!name || !email || !message) {
+        formStatus.textContent = 'Please fill in all fields.';
+        formStatus.className = 'form-status error';
+        return;
+      }
+
+      // Disable button while sending
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      formStatus.textContent = '';
+      formStatus.className = 'form-status';
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+          formStatus.textContent = data.message || 'Message sent! I\'ll be in touch soon.';
+          formStatus.className = 'form-status success';
+          contactForm.reset();
+        } else {
+          formStatus.textContent = data.message || 'Something went wrong. Please try again.';
+          formStatus.className = 'form-status error';
+        }
+      } catch {
+        formStatus.textContent = 'Network error — please check your connection and try again.';
+        formStatus.className = 'form-status error';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send';
+      }
+    });
+  }
+
   // ── Cycling typewriter on hero subtitle ──────────────────────────────────
   const heroSubtitle = document.getElementById('hero-subtitle');
   if (heroSubtitle) {
