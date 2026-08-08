@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const { createClient } = require('@supabase/supabase-js');
 
 function readField(value) {
     return typeof value === 'string' ? value.trim() : '';
@@ -24,38 +24,31 @@ module.exports = async function handler(req, res) {
         return res.status(400).json({ message: 'Invalid email address' });
     }
 
-    const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
-    const smtpUser = process.env.EMAIL_USER;
-    const smtpPass = process.env.EMAIL_PASS;
-    const recipient = process.env.EMAIL_TO || smtpUser;
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-    if (!smtpUser || !smtpPass || !recipient) {
-        return res.status(500).json({ message: 'Email service is not configured' });
+    if (!supabaseUrl || !supabaseKey) {
+        console.error('Supabase credentials missing.');
+        return res.status(500).json({ message: 'Database service is not configured' });
     }
 
     try {
-        const transporter = nodemailer.createTransport({
-            host: smtpHost,
-            port: Number.isFinite(smtpPort) ? smtpPort : 587,
-            secure: Number.isFinite(smtpPort) ? smtpPort === 465 : false,
-            auth: {
-                user: smtpUser,
-                pass: smtpPass,
-            },
-        });
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        await transporter.sendMail({
-            from: smtpUser,
-            to: recipient,
-            replyTo: email,
-            subject: `Portfolio Contact from ${name}`,
-            text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-        });
+        const { error } = await supabase
+            .from('contacts')
+            .insert([
+                { name, email, message }
+            ]);
 
-        return res.status(200).json({ message: 'Message sent successfully!' });
+        if (error) {
+            console.error('Supabase Insert Error:', error);
+            throw error;
+        }
+
+        return res.status(200).json({ message: 'Message saved successfully!' });
     } catch (error) {
-        console.error('Error sending email:', error);
-        return res.status(500).json({ message: 'Failed to send message. Please try again later.' });
+        console.error('Error saving contact:', error);
+        return res.status(500).json({ message: 'Failed to save message. Please try again later.' });
     }
 };
