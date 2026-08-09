@@ -50,6 +50,7 @@
         <a href="#skills" class="nav-link">Skills</a>
         <a href="#work" class="nav-link">Work</a>
         <a href="#gallery" class="nav-link">Projects</a>
+        <a href="blog.html" class="nav-link">Blog</a>
         <a href="#contact" class="nav-link btn btn-sm">Contact</a>
       </nav>
     </div>
@@ -341,13 +342,38 @@
     </div>
   </div>
 
+  <!-- Chatbot Widget -->
+  <button id="chat-fab" class="chat-fab" type="button" aria-label="Open chat" aria-expanded="false">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z" fill="currentColor"/>
+      <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <div id="chat-panel" class="chat-panel" role="dialog" aria-label="Chat with AI assistant">
+    <div class="chat-panel-header">
+      <span class="chat-panel-header-dot" aria-hidden="true"></span>
+      <div>
+        <h3>Ask About Ritesh</h3>
+        <p>AI-powered • Ask me anything about his work</p>
+      </div>
+    </div>
+    <div id="chat-log" role="log" aria-live="polite">
+      <div class="chat-message chat-message--assistant">Hi! 👋 I'm Ritesh's AI assistant. Ask me about his skills, projects, education, or experience!</div>
+    </div>
+    <form id="chat-form" autocomplete="off">
+      <input id="chat-input" type="text" placeholder="Ask about Ritesh..." maxlength="1000" aria-label="Type your message" />
+      <button id="chat-send-btn" type="submit">Send</button>
+    </form>
+  </div>
+
   <footer class="site-footer">
     <div class="container">
       <p>© <span id="year"></span> Ritesh Kumar Mishra • Designed & built with love</p>
     </div>
   </footer>
 
-  <script src="script.js?v=20260806f" defer></script>
+  <script src="script.js?v=20260809a" defer></script>
 </body>
 
 </html>

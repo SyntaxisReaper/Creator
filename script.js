@@ -656,4 +656,113 @@
     scrambleTitles.forEach((el) => scrambleObserver.observe(el));
   }
 
+  // ── Chatbot Widget ───────────────────────────────────────────────────────
+  const chatFab = document.getElementById('chat-fab');
+  const chatPanel = document.getElementById('chat-panel');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const chatLog = document.getElementById('chat-log');
+  const chatSendBtn = document.getElementById('chat-send-btn');
+
+  if (chatFab && chatPanel && chatForm && chatInput && chatLog) {
+    let chatSessionId = null;
+    try { chatSessionId = localStorage.getItem('chatSessionId'); } catch (e) { }
+    let chatSending = false;
+
+    // Toggle chat panel
+    chatFab.addEventListener('click', () => {
+      const isOpen = chatPanel.classList.contains('is-open');
+      chatPanel.classList.toggle('is-open', !isOpen);
+      chatFab.classList.toggle('is-open', !isOpen);
+      chatFab.setAttribute('aria-expanded', String(!isOpen));
+      if (!isOpen) {
+        chatInput.focus();
+      }
+    });
+
+    // Close on Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && chatPanel.classList.contains('is-open')) {
+        chatPanel.classList.remove('is-open');
+        chatFab.classList.remove('is-open');
+        chatFab.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    function appendChatMessage(role, text) {
+      const el = document.createElement('div');
+      el.className = `chat-message chat-message--${role}`;
+      el.textContent = text;
+      chatLog.appendChild(el);
+      el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    function showTypingIndicator() {
+      const el = document.createElement('div');
+      el.className = 'chat-typing';
+      el.id = 'chat-typing-indicator';
+      el.innerHTML = '<span></span><span></span><span></span>';
+      chatLog.appendChild(el);
+      el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    function removeTypingIndicator() {
+      const el = document.getElementById('chat-typing-indicator');
+      if (el) el.remove();
+    }
+
+    async function sendChatMessage(message) {
+      if (chatSending) return;
+      chatSending = true;
+      if (chatSendBtn) chatSendBtn.disabled = true;
+
+      appendChatMessage('user', message);
+      showTypingIndicator();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: chatSessionId, message })
+        });
+
+        removeTypingIndicator();
+        const data = await res.json();
+
+        if (!res.ok) {
+          appendChatMessage('system', data.error || 'Something went wrong.');
+          return;
+        }
+
+        chatSessionId = data.sessionId;
+        try { localStorage.setItem('chatSessionId', chatSessionId); } catch (e) { }
+        appendChatMessage('assistant', data.reply);
+      } catch (err) {
+        removeTypingIndicator();
+        appendChatMessage('system', 'Network error — please check your connection.');
+      } finally {
+        chatSending = false;
+        if (chatSendBtn) chatSendBtn.disabled = false;
+      }
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const msg = chatInput.value.trim();
+      if (msg) {
+        sendChatMessage(msg);
+        chatInput.value = '';
+      }
+    });
+
+    // Register chat elements with cursor hover system
+    const chatInteractive = chatPanel.querySelectorAll('button, input, a');
+    chatInteractive.forEach((el) => {
+      el.addEventListener('mouseenter', () => body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => body.classList.remove('cursor-hover'));
+    });
+    chatFab.addEventListener('mouseenter', () => body.classList.add('cursor-hover'));
+    chatFab.addEventListener('mouseleave', () => body.classList.remove('cursor-hover'));
+  }
+
 })();
