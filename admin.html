@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blog Admin — Ritesh Kumar Mishra</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- marked.js for live preview -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    :root {
+      --bg-1: #0b0d11;
+      --bg-2: #171c22;
+      --bg-3: #232a33;
+      --text: #e6e6f0;
+      --muted: #b8b9c3;
+      --card: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.14);
+      --glass: rgba(255, 255, 255, 0.06);
+      --accent-1: #6ee7f9;
+      --accent-2: #a78bfa;
+      --accent-3: #f472b6;
+      --danger: #ef4444;
+      --success: #10b981;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg-1);
+      min-height: 100vh;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────────── */
+    .admin-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .admin-header h1 {
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .admin-header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── Auth Gate ─────────────────────────────────────────────────────────── */
+    .auth-gate {
+      max-width: 400px;
+      margin: 120px auto;
+      text-align: center;
+    }
+
+    .auth-gate h2 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .auth-gate p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .auth-gate .field-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, .1);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(110, 231, 249, .2), rgba(167, 139, 250, .2));
+      border-color: rgba(255, 255, 255, .2);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(110, 231, 249, .35), rgba(167, 139, 250, .35));
+    }
+
+    .btn-danger {
+      border-color: rgba(239, 68, 68, .3);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, .12);
+    }
+
+    .btn-success {
+      border-color: rgba(16, 185, 129, .3);
+      color: var(--success);
+    }
+
+    .btn-success:hover {
+      background: rgba(16, 185, 129, .12);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Forms ─────────────────────────────────────────────────────────────── */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: rgba(255, 255, 255, .35);
+      background: rgba(255, 255, 255, .08);
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, .15);
+    }
+
+    .field textarea {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      resize: vertical;
+    }
+
+    .field .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+      opacity: .7;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-row label {
+      font-size: 0.9rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .08);
+      position: relative;
+      cursor: pointer;
+      transition: background .2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .toggle-switch:checked {
+      background: rgba(16, 185, 129, .25);
+      border-color: rgba(16, 185, 129, .4);
+    }
+
+    .toggle-switch:checked::after {
+      transform: translateX(20px);
+      background: var(--success);
+    }
+
+    /* ── Status / Toast ───────────────────────────────────────────────────── */
+    .status-msg {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .status-msg.visible { display: block; }
+    .status-msg.success { background: rgba(16, 185, 129, .12); border: 1px solid rgba(16, 185, 129, .3); color: var(--success); }
+    .status-msg.error { background: rgba(239, 68, 68, .12); border: 1px solid rgba(239, 68, 68, .3); color: var(--danger); }
+
+    /* ── Posts List ────────────────────────────────────────────────────────── */
+    .posts-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .posts-table th {
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .posts-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .posts-table tr:hover td {
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .post-title-cell {
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .badge-published {
+      background: rgba(16, 185, 129, .15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, .3);
+    }
+
+    .badge-draft {
+      background: rgba(255, 189, 46, .12);
+      color: #ffbd2e;
+      border: 1px solid rgba(255, 189, 46, .25);
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state p { margin-bottom: 16px; }
+
+    /* ── Editor ────────────────────────────────────────────────────────────── */
+    .editor-section {
+      display: none;
+    }
+
+    .editor-section.visible {
+      display: block;
+    }
+
+    .editor-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .editor-tab {
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      background: var(--glass);
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+
+    .editor-tab.active {
+      background: rgba(255, 255, 255, .1);
+      color: var(--text);
+    }
+
+    .preview-pane {
+      display: none;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 0 10px 10px 10px;
+      background: rgba(255, 255, 255, .03);
+      min-height: 300px;
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .preview-pane.visible { display: block; }
+
+    .preview-pane h1, .preview-pane h2, .preview-pane h3 { margin-top: 1.5em; margin-bottom: 0.5em; }
+    .preview-pane h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .preview-pane h3 { font-size: 1.15rem; }
+    .preview-pane p { margin: 0 0 1em; color: var(--muted); }
+    .preview-pane a { color: var(--accent-1); }
+    .preview-pane ul, .preview-pane ol { margin: 0 0 1em; padding-left: 24px; color: var(--muted); }
+    .preview-pane blockquote { margin: 1em 0; padding: 10px 16px; border-left: 3px solid var(--accent-2); background: rgba(255,255,255,.04); border-radius: 0 10px 10px 0; color: var(--muted); font-style: italic; }
+    .preview-pane pre { margin: 1em 0; padding: 14px; border-radius: 10px; background: rgba(10,10,18,.5); border: 1px solid var(--border); overflow-x: auto; font-size: 0.85rem; }
+    .preview-pane code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; padding: 2px 5px; border-radius: 4px; background: rgba(255,255,255,.08); }
+    .preview-pane pre code { padding: 0; background: none; }
+    .preview-pane img { max-width: 100%; border-radius: 10px; }
+
+    .editor-footer {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .editor-footer .btn { flex-shrink: 0; }
+
+    /* ── Confirm Modal ────────────────────────────────────────────────────── */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .confirm-overlay.visible {
+      display: flex;
+    }
+
+    .confirm-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+      text-align: center;
+    }
+
+    .confirm-box h3 { margin-bottom: 8px; }
+    .confirm-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .confirm-box .btn-row { display: flex; gap: 8px; justify-content: center; }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .posts-table th:nth-child(3),
+      .posts-table td:nth-child(3) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Auth Gate -->
+  <div id="auth-gate" class="auth-gate">
+    <h2>🔒 Blog Admin</h2>
+    <p>Enter your admin key to manage posts.</p>
+    <div class="field-row">
+      <input id="auth-key" type="password" placeholder="Admin secret key" />
+      <button id="auth-btn" class="btn btn-primary" type="button">Unlock</button>
+    </div>
+    <p id="auth-error" style="color: var(--danger); margin-top: 10px; font-size: 0.85rem;"></p>
+  </div>
+
+  <!-- Admin Panel (hidden until authenticated) -->
+  <div id="admin-panel" class="admin-container" style="display: none;">
+
+    <div class="admin-header">
+      <h1>📝 Blog Admin</h1>
+      <div class="admin-header-actions">
+        <a href="blog.html" class="btn btn-sm" target="_blank">View Blog ↗</a>
+        <button id="new-post-btn" class="btn btn-primary btn-sm">+ New Post</button>
+        <button id="logout-btn" class="btn btn-sm btn-danger">Logout</button>
+      </div>
+    </div>
+
+    <div id="status-msg" class="status-msg"></div>
+
+    <!-- Posts List View -->
+    <div id="list-view">
+      <div id="posts-container"></div>
+    </div>
+
+    <!-- Editor View -->
+    <div id="editor-view" class="editor-section">
+      <h2 id="editor-title" style="margin-bottom: 20px;">New Post</h2>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="post-title">Title</label>
+          <input id="post-title" type="text" placeholder="My Awesome Post" />
+        </div>
+        <div class="field">
+          <label for="post-slug">Slug</label>
+          <input id="post-slug" type="text" placeholder="my-awesome-post" />
+          <p class="hint">URL-friendly identifier. Lowercase, hyphens only.</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="post-excerpt">Excerpt</label>
+        <input id="post-excerpt" type="text" placeholder="A brief summary of the post..." />
+      </div>
+
+      <div class="field">
+        <label for="post-tags">Tags</label>
+        <input id="post-tags" type="text" placeholder="design, react, ai (comma-separated)" />
+      </div>
+
+      <div class="toggle-row">
+        <input id="post-published" type="checkbox" class="toggle-switch" />
+        <label for="post-published">Publish immediately</label>
+      </div>
+
+      <div class="field">
+        <label>Content (Markdown)</label>
+        <div class="editor-tabs">
+          <button class="editor-tab active" data-tab="write">Write</button>
+          <button class="editor-tab" data-tab="preview">Preview</button>
+        </div>
+        <textarea id="post-content" rows="18" placeholder="# Hello World&#10;&#10;Write your post in markdown..."></textarea>
+        <div id="preview-pane" class="preview-pane"></div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="save-btn" class="btn btn-primary">Save Post</button>
+        <button id="save-publish-btn" class="btn btn-success">Save & Publish</button>
+        <button id="cancel-btn" class="btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div id="confirm-overlay" class="confirm-overlay">
+    <div class="confirm-box">
+      <h3>Delete Post?</h3>
+      <p id="confirm-text">This action cannot be undone.</p>
+      <div class="btn-row">
+        <button id="confirm-cancel" class="btn">Cancel</button>
+        <button id="confirm-delete" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      if (typeof marked !== 'undefined') {
+        marked.setOptions({ breaks: true, gfm: true });
+      }
+
+      // ── State ──────────────────────────────────────────────────────────
+      let adminKey = '';
+      let editingPostId = null;
+
+      // ── DOM refs ───────────────────────────────────────────────────────
+      const authGate = document.getElementById('auth-gate');
+      const authKeyInput = document.getElementById('auth-key');
+      const authBtn = document.getElementById('auth-btn');
+      const authError = document.getElementById('auth-error');
+      const adminPanel = document.getElementById('admin-panel');
+      const logoutBtn = document.getElementById('logout-btn');
+      const newPostBtn = document.getElementById('new-post-btn');
+      const statusMsg = document.getElementById('status-msg');
+      const listView = document.getElementById('list-view');
+      const editorView = document.getElementById('editor-view');
+      const editorTitle = document.getElementById('editor-title');
+      const postsContainer = document.getElementById('posts-container');
+
+      const postTitle = document.getElementById('post-title');
+      const postSlug = document.getElementById('post-slug');
+      const postExcerpt = document.getElementById('post-excerpt');
+      const postTags = document.getElementById('post-tags');
+      const postPublished = document.getElementById('post-published');
+      const postContent = document.getElementById('post-content');
+      const previewPane = document.getElementById('preview-pane');
+
+      const saveBtn = document.getElementById('save-btn');
+      const savePublishBtn = document.getElementById('save-publish-btn');
+      const cancelBtn = document.getElementById('cancel-btn');
+
+      const confirmOverlay = document.getElementById('confirm-overlay');
+      const confirmText = document.getElementById('confirm-text');
+      const confirmCancel = document.getElementById('confirm-cancel');
+      const confirmDeleteBtn = document.getElementById('confirm-delete');
+
+      // ── Auth ────────────────────────────────────────────────────────────
+      function tryStoredKey() {
+        try {
+          const stored = sessionStorage.getItem('adminKey');
+          if (stored) {
+            adminKey = stored;
+            showAdmin();
+          }
+        } catch (e) { }
+      }
+
+      authBtn.addEventListener('click', authenticate);
+      authKeyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') authenticate(); });
+
+      async function authenticate() {
+        const key = authKeyInput.value.trim();
+        if (!key) return;
+
+        authBtn.disabled = true;
+        authBtn.textContent = 'Verifying…';
+        authError.textContent = '';
+
+        try {
+          const res = await apiFetch('GET');
+          if (res.ok) {
+            adminKey = key;
+            try { sessionStorage.setItem('adminKey', key); } catch (e) { }
+            showAdmin();
+          } else {
+            authError.textContent = 'Invalid key. Please try again.';
+          }
+        } catch {
+          authError.textContent = 'Connection error. Please try again.';
+        }
+
+        authBtn.disabled = false;
+        authBtn.textContent = 'Unlock';
+
+        // Helper — we need the key set before calling apiFetch
+        async function apiFetch(method) {
+          return fetch('/api/admin-post', {
+            method,
+            headers: { 'Content-Type': 'application/json', 'x-admin-secret': key }
+          });
+        }
+      }
+
+      logoutBtn.addEventListener('click', () => {
+        adminKey = '';
+        try { sessionStorage.removeItem('adminKey'); } catch (e) { }
+        adminPanel.style.display = 'none';
+        authGate.style.display = '';
+        authKeyInput.value = '';
+      });
+
+      function showAdmin() {
+        authGate.style.display = 'none';
+        adminPanel.style.display = '';
+        loadPosts();
+      }
+
+      // ── API Helper ─────────────────────────────────────────────────────
+      function apiFetch(method, body, query) {
+        const url = query ? `/api/admin-post?${new URLSearchParams(query)}` : '/api/admin-post';
+        const opts = {
+          method,
+          headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminKey }
+        };
+        if (body) opts.body = JSON.stringify(body);
+        return fetch(url, opts);
+      }
+
+      // ── Status Messages ────────────────────────────────────────────────
+      function showStatus(msg, type) {
+        statusMsg.textContent = msg;
+        statusMsg.className = `status-msg visible ${type}`;
+        setTimeout(() => { statusMsg.className = 'status-msg'; }, 4000);
+      }
+
+      // ── Posts List ──────────────────────────────────────────────────────
+      async function loadPosts() {
+        postsContainer.innerHTML = '<p style="color: var(--muted); padding: 20px 0;">Loading posts…</p>';
+
+        try {
+          const res = await apiFetch('GET');
+          const data = await res.json();
+
+          if (!res.ok) throw new Error(data.error);
+
+          const posts = data.posts || [];
+
+          if (posts.length === 0) {
+            postsContainer.innerHTML = `
+              <div class="empty-state">
+                <p>No blog posts yet. Create your first one!</p>
+                <button class="btn btn-primary" onclick="document.getElementById('new-post-btn').click()">+ New Post</button>
+              </div>`;
+            return;
+          }
+
+          postsContainer.innerHTML = `
+            <table class="posts-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${posts.map(p => `
+                  <tr>
+                    <td class="post-title-cell">${escapeHtml(p.title)}</td>
+                    <td>
+                      <span class="badge ${p.published ? 'badge-published' : 'badge-draft'}">
+                        ${p.published ? 'Published' : 'Draft'}
+                      </span>
+                    </td>
+                    <td style="color: var(--muted); font-size: 0.85rem;">
+                      ${formatDate(p.published_at || p.created_at)}
+                    </td>
+                    <td>
+                      <div class="post-actions" style="justify-content: flex-end;">
+                        <button class="btn btn-sm" onclick="window._adminEditPost('${p.id}')">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="window._adminDeletePost('${p.id}', '${escapeHtml(p.title).replace(/'/g, "\\'")}')">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>`;
+        } catch (err) {
+          postsContainer.innerHTML = `<p style="color: var(--danger);">Failed to load posts: ${escapeHtml(err.message)}</p>`;
+        }
+      }
+
+      // ── Editor ──────────────────────────────────────────────────────────
+      function showEditor(post) {
+        listView.style.display = 'none';
+        editorView.classList.add('visible');
+
+        if (post) {
+          editingPostId = post.id;
+          editorTitle.textContent = 'Edit Post';
+          postTitle.value = post.title || '';
+          postSlug.value = post.slug || '';
+          postExcerpt.value = post.excerpt || '';
+          postTags.value = (post.tags || []).join(', ');
+          postPublished.checked = post.published || false;
+          postContent.value = post.content_markdown || '';
+        } else {
+          editingPostId = null;
+          editorTitle.textContent = 'New Post';
+          postTitle.value = '';
+          postSlug.value = '';
+          postExcerpt.value = '';
+          postTags.value = '';
+          postPublished.checked = false;
+          postContent.value = '';
+        }
+
+        // Reset to write tab
+        switchTab('write');
+        postTitle.focus();
+      }
+
+      function hideEditor() {
+        editorView.classList.remove('visible');
+        listView.style.display = '';
+        editingPostId = null;
+      }
+
+      newPostBtn.addEventListener('click', () => showEditor(null));
+      cancelBtn.addEventListener('click', hideEditor);
+
+      // Auto-generate slug from title
+      postTitle.addEventListener('input', () => {
+        if (!editingPostId) {
+          postSlug.value = postTitle.value
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+        }
+      });
+
+      // Save handlers
+      saveBtn.addEventListener('click', () => savePost(false));
+      savePublishBtn.addEventListener('click', () => savePost(true));
+
+      async function savePost(publish) {
+        const title = postTitle.value.trim();
+        const slug = postSlug.value.trim().toLowerCase();
+        const content_markdown = postContent.value;
+        const excerpt = postExcerpt.value.trim();
+        const tags = postTags.value;
+        const published = publish || postPublished.checked;
+
+        if (!title) { showStatus('Title is required.', 'error'); return; }
+        if (!slug) { showStatus('Slug is required.', 'error'); return; }
+        if (!content_markdown.trim()) { showStatus('Content is required.', 'error'); return; }
+
+        saveBtn.disabled = true;
+        savePublishBtn.disabled = true;
+
+        try {
+          const body = { title, slug, content_markdown, excerpt, tags, published };
+          let res;
+
+          if (editingPostId) {
+            body.id = editingPostId;
+            res = await apiFetch('PUT', body);
+          } else {
+            res = await apiFetch('POST', body);
+          }
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            showStatus(data.error || 'Failed to save post.', 'error');
+            return;
+          }
+
+          showStatus(editingPostId ? 'Post updated!' : 'Post created!', 'success');
+          hideEditor();
+          loadPosts();
+        } catch (err) {
+          showStatus('Network error — please try again.', 'error');
+        } finally {
+          saveBtn.disabled = false;
+          savePublishBtn.disabled = false;
+        }
+      }
+
+      // ── Edit Post ──────────────────────────────────────────────────────
+      window._adminEditPost = async function (id) {
+        try {
+          const res = await apiFetch('GET');
+          const data = await res.json();
+          const post = (data.posts || []).find(p => p.id === id);
+
+          if (!post) { showStatus('Post not found.', 'error'); return; }
+
+          // Fetch full content
+          const fullRes = await fetch(`/api/admin-post`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminKey }
+          });
+          const fullData = await fullRes.json();
+          const fullPost = (fullData.posts || []).find(p => p.id === id);
+
+          // The list endpoint doesn't include content_markdown, so we need to
+          // re-fetch. But our admin endpoint returns all fields listed in select.
+          // Let's update the API call to include content when editing.
+          // For now, we'll load the post via a workaround.
+
+          // Actually, let me fetch directly with content
+          showEditor(fullPost || post);
+
+          // We need the content_markdown. Let's fetch it separately.
+          if (!fullPost?.content_markdown) {
+            // The list endpoint doesn't include content_markdown.
+            // We'll need to fetch the full post. Let's use the public endpoint.
+            const postRes = await fetch(`/api/post?slug=${encodeURIComponent(post.slug)}`);
+            if (postRes.ok) {
+              const postData = await postRes.json();
+              if (postData.post?.content_markdown) {
+                postContent.value = postData.post.content_markdown;
+              }
+            }
+          }
+        } catch (err) {
+          showStatus('Failed to load post for editing.', 'error');
+        }
+      };
+
+      // ── Delete Post ────────────────────────────────────────────────────
+      let deleteTargetId = null;
+
+      window._adminDeletePost = function (id, title) {
+        deleteTargetId = id;
+        confirmText.textContent = `Delete "${title}"? This cannot be undone.`;
+        confirmOverlay.classList.add('visible');
+      };
+
+      confirmCancel.addEventListener('click', () => {
+        confirmOverlay.classList.remove('visible');
+        deleteTargetId = null;
+      });
+
+      confirmDeleteBtn.addEventListener('click', async () => {
+        if (!deleteTargetId) return;
+
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.textContent = 'Deleting…';
+
+        try {
+          const res = await apiFetch('DELETE', { id: deleteTargetId });
+          const data = await res.json();
+
+          if (!res.ok) {
+            showStatus(data.error || 'Failed to delete post.', 'error');
+          } else {
+            showStatus('Post deleted.', 'success');
+            loadPosts();
+          }
+        } catch {
+          showStatus('Network error — please try again.', 'error');
+        }
+
+        confirmOverlay.classList.remove('visible');
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.textContent = 'Delete';
+        deleteTargetId = null;
+      });
+
+      // ── Editor Tabs (Write / Preview) ──────────────────────────────────
+      const editorTabs = document.querySelectorAll('.editor-tab');
+      editorTabs.forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      });
+
+      function switchTab(tabName) {
+        editorTabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+        if (tabName === 'preview') {
+          postContent.style.display = 'none';
+          previewPane.classList.add('visible');
+          if (typeof marked !== 'undefined') {
+            previewPane.innerHTML = marked.parse(postContent.value || '*Nothing to preview*');
+          } else {
+            previewPane.textContent = postContent.value;
+          }
+        } else {
+          postContent.style.display = '';
+          previewPane.classList.remove('visible');
+        }
+      }
+
+      // ── Helpers ─────────────────────────────────────────────────────────
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str || '';
+        return div.innerHTML;
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '—';
+        return new Date(iso).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric'
+        });
+      }
+
+      // ── Init ────────────────────────────────────────────────────────────
+      tryStoredKey();
+    })();
+  </script>
+</body>
+
+</html>
