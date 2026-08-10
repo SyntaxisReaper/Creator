@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unsubscribed — Ritesh Kumar Mishra</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260809a" />
+
+  <style>
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg-1);
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .message-card {
+      max-width: 500px;
+      padding: 40px;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .4);
+      z-index: 10;
+    }
+    .message-card h1 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      color: var(--muted);
+    }
+    .message-card p {
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .btn-home {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, rgba(110, 231, 249, .2), rgba(167, 139, 250, .2));
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 10px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-home:hover {
+      background: linear-gradient(135deg, rgba(110, 231, 249, .35), rgba(167, 139, 250, .35));
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-outline" aria-hidden="true"></div>
+
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+  </div>
+  <div class="starfield" aria-hidden="true"></div>
+  <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+
+  <div class="message-card">
+    <h1>Unsubscribed</h1>
+    <p>You have been successfully removed from the mailing list and won't receive any more emails from me.</p>
+    <a href="/#home" class="btn-home">Return to Home</a>
+  </div>
+
+  <script src="script.js?v=20260809a" defer></script>
+</body>
+</html>

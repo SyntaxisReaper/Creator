@@ -765,4 +765,54 @@
     chatFab.addEventListener('mouseleave', () => body.classList.remove('cursor-hover'));
   }
 
+  /* ── Newsletter Form ─────────────────────────────────────────────────── */
+  const newsletterForm = document.getElementById('newsletter-form');
+  const newsletterEmail = document.getElementById('newsletter-email');
+  const newsletterMessage = document.getElementById('newsletter-message');
+  const newsletterBtn = document.getElementById('newsletter-btn');
+
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = newsletterEmail.value.trim();
+      if (!email) return;
+
+      newsletterBtn.disabled = true;
+      newsletterBtn.textContent = 'Subscribing...';
+      newsletterMessage.textContent = '';
+      newsletterMessage.style.color = 'var(--muted)';
+
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+        
+        if (res.ok) {
+          newsletterMessage.style.color = 'var(--success)';
+          newsletterMessage.textContent = data.message;
+          newsletterEmail.value = '';
+        } else {
+          newsletterMessage.style.color = 'var(--danger)';
+          newsletterMessage.textContent = data.error || 'Something went wrong.';
+        }
+      } catch (err) {
+        newsletterMessage.style.color = 'var(--danger)';
+        newsletterMessage.textContent = 'Network error. Please try again.';
+      } finally {
+        newsletterBtn.disabled = false;
+        newsletterBtn.textContent = 'Subscribe';
+      }
+    });
+
+    // Register elements for cursor hover
+    [newsletterEmail, newsletterBtn].forEach((el) => {
+      el.addEventListener('mouseenter', () => body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => body.classList.remove('cursor-hover'));
+    });
+  }
+
 })();
