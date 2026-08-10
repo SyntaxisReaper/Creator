@@ -43,7 +43,7 @@ module.exports = async function handler(req, res) {
     const domain = req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : process.env.SITE_URL);
     const confirmUrl = `${domain}/api/confirm?token=${subscriber.confirm_token}`;
 
-    await resend.emails.send({
+    const { error: resendError } = await resend.emails.send({
       from: 'Ritesh <newsletter@fluxipher.me>', 
       to: email,
       subject: 'Confirm your subscription',
@@ -57,6 +57,11 @@ module.exports = async function handler(req, res) {
         </div>
       `
     });
+
+    if (resendError) {
+      console.error('Resend API Error:', resendError);
+      throw resendError;
+    }
 
     return res.status(200).json({ message: 'Check your inbox to confirm your subscription.' });
 
