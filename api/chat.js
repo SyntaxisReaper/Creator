@@ -109,6 +109,24 @@ module.exports = async function handler(req, res) {
             content: trimmedMessage
         });
 
+        // 4.5 Fetch recent blog posts for context
+        const { data: posts } = await supabase
+            .from('posts')
+            .select('title, slug, excerpt, content_markdown')
+            .eq('published', true)
+            .order('published_at', { ascending: false })
+            .limit(5);
+
+        let dynamicSystemPrompt = SYSTEM_PROMPT;
+        if (posts && posts.length > 0) {
+            dynamicSystemPrompt += "\n\n--- RECENT BLOG POSTS ---\n";
+            dynamicSystemPrompt += "Ritesh has written the following blog posts. Use this to answer questions about his thoughts, and you can direct users to read the full post at the URL: /blog?slug=[slug]\n\n";
+            posts.forEach(p => {
+                const snippet = p.content_markdown ? p.content_markdown.substring(0, 400).replace(/\n/g, ' ') : '';
+                dynamicSystemPrompt += `Title: ${p.title}\nSlug: ${p.slug}\nExcerpt: ${p.excerpt}\nContent snippet: ${snippet}...\n\n`;
+            });
+        }
+
         // 5. Call Groq API (OpenAI-compatible format)
         const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -121,7 +139,7 @@ module.exports = async function handler(req, res) {
                 max_tokens: 400,
                 temperature: 0.7,
                 messages: [
-                    { role: 'system', content: SYSTEM_PROMPT },
+                    { role: 'system', content: dynamicSystemPrompt },
                     ...(history || []).map(h => ({ role: h.role, content: h.content })),
                     { role: 'user', content: trimmedMessage }
                 ]
