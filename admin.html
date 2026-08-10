@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260809a" />
 
   <!-- marked.js for live preview -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -41,13 +42,16 @@
       color: var(--text);
       background: var(--bg-1);
       min-height: 100vh;
+      position: relative;
     }
 
     /* ── Layout ───────────────────────────────────────────────────────────── */
     .admin-container {
       max-width: 960px;
       margin: 0 auto;
-      padding: 24px 20px 80px;
+      padding: 100px 20px 80px;
+      position: relative;
+      z-index: 10;
     }
 
     .admin-header {
@@ -77,8 +81,17 @@
     /* ── Auth Gate ─────────────────────────────────────────────────────────── */
     .auth-gate {
       max-width: 400px;
-      margin: 120px auto;
+      margin: 180px auto;
       text-align: center;
+      position: relative;
+      z-index: 10;
+      padding: 40px;
+      background: var(--glass);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .4);
     }
 
     .auth-gate h2 {
@@ -458,6 +471,31 @@
 
 <body>
 
+  <!-- Custom Cursor -->
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-outline" aria-hidden="true"></div>
+
+  <!-- Animated Background Blobs -->
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+  </div>
+  <div class="starfield" aria-hidden="true"></div>
+  <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header" role="banner">
+    <div class="container">
+      <a href="index.html#home" class="brand" aria-label="Go to home">
+        <img id="brand-logo" class="brand-logo" src="logo/Brand.png" alt="Ritesh logo" />
+        <span class="brand-name">Ritesh Kumar Mishra</span>
+      </a>
+      <nav class="nav" id="nav-menu" role="navigation" aria-label="Primary">
+        <a href="index.html#home" class="nav-link">Home</a>
+        <a href="blog.html" class="nav-link">Blog</a>
+      </nav>
+    </div>
+  </header>
   <!-- Auth Gate -->
   <div id="auth-gate" class="auth-gate">
     <h2>🔒 Blog Admin</h2>
@@ -950,6 +988,7 @@
       tryStoredKey();
     })();
   </script>
+  <script src="script.js?v=20260809a" defer></script>
 </body>
 
 </html>
