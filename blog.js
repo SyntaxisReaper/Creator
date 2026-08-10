@@ -68,7 +68,7 @@
       container.innerHTML = posts
         .map(
           (post) => `
-        <a href="blog.html?slug=${encodeURIComponent(post.slug)}" class="blog-card glass hover-rise reveal visible">
+        <a href="/blog?slug=${encodeURIComponent(post.slug)}" class="blog-card glass hover-rise reveal visible">
           <div class="blog-card-body">
             <h3 class="blog-card-title">${escapeHtml(post.title)}</h3>
             <time class="blog-card-date">${formatDate(post.published_at)}</time>
@@ -102,7 +102,7 @@
 
       if (!res.ok) {
         if (loadingEl) loadingEl.style.display = 'none';
-        if (contentEl) contentEl.innerHTML = '<p class="blog-not-found">Post not found. <a href="blog.html">← Back to all posts</a></p>';
+        if (contentEl) contentEl.innerHTML = '<p class="blog-not-found">Post not found. <a href="/blog">← Back to all posts</a></p>';
         return;
       }
 
