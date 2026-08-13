@@ -270,21 +270,28 @@
   <section id="contact" class="section">
     <div class="container narrow">
       <h2 class="section-title reveal">Contact</h2>
-      <p class="lead reveal">Have a project in mind or want to collaborate? Send me a message — I’ll reply at <a
-          href="mailto:syntaxisreaper@gmail.com">syntaxisreaper@gmail.com</a>.</p>
+      <p class="lead reveal">Have a project in mind or want to collaborate? Send me a message — I’ll reply at 
+        <span class="email-copy">
+          <a href="mailto:syntaxisreaper@gmail.com" id="email-text">syntaxisreaper@gmail.com</a>
+          <button id="copy-email-btn" aria-label="Copy email address">📋</button>
+        </span>
+      </p>
 
       <form id="contact-form" class="contact-form reveal" novalidate>
-        <div class="field">
+        <div class="form-field">
           <label for="name">Name</label>
-          <input id="name" name="name" type="text" placeholder="Your name" required />
+          <input id="contact-name" name="name" type="text" placeholder="Your name" required />
+          <span class="field-error"></span>
         </div>
-        <div class="field">
+        <div class="form-field">
           <label for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+          <input id="contact-email" name="email" type="email" placeholder="you@example.com" required />
+          <span class="field-error"></span>
         </div>
-        <div class="field">
+        <div class="form-field">
           <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" placeholder="Tell me about your project" required></textarea>
+          <textarea id="contact-message" name="message" rows="5" placeholder="Tell me about your project" required></textarea>
+          <span class="field-error"></span>
         </div>
         <button type="submit" class="btn btn-primary">Send</button>
         <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
@@ -373,17 +380,20 @@
         <div class="newsletter-glow" aria-hidden="true"></div>
         <h2 class="newsletter-title">Stay Updated</h2>
         <p class="newsletter-subtitle">Join my newsletter to get early access to my latest projects, articles, and design experiments.</p>
-        <form id="newsletter-form" class="newsletter-form">
-          <div class="newsletter-input-wrapper">
-            <svg class="newsletter-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            <input type="email" id="newsletter-email" placeholder="Enter your email address" required aria-label="Email address" />
-            <button type="submit" class="btn btn-primary" id="newsletter-btn">
-              <span>Subscribe</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </button>
+        <form id="newsletter-form" class="newsletter-form" novalidate>
+          <div class="form-field" style="margin-bottom: 0;">
+            <div class="newsletter-input-wrapper">
+              <svg class="newsletter-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <input type="email" id="newsletter-email" placeholder="Enter your email address" required aria-label="Email address" />
+              <button type="submit" class="btn btn-primary" id="newsletter-btn">
+                <span>Subscribe</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+            </div>
+            <span class="field-error" style="text-align: left; padding-left: 20px;"></span>
           </div>
         </form>
         <p id="newsletter-message" class="newsletter-message"></p>
@@ -396,6 +406,23 @@
       <p>© <span id="year"></span> Ritesh Kumar Mishra • Designed & built with love</p>
     </div>
   </footer>
+
+  <!-- Back to top button -->
+  <button id="back-to-top" aria-label="Back to top" class="back-to-top">
+    ↑
+  </button>
+
+  <!-- Section dot indicator -->
+  <nav id="section-dots" class="section-dots" aria-label="Page sections">
+    <a href="#home" class="dot active" data-section="home" aria-label="Home"></a>
+    <a href="#about" class="dot" data-section="about" aria-label="About"></a>
+    <a href="#journey" class="dot" data-section="journey" aria-label="Journey"></a>
+    <a href="#skills" class="dot" data-section="skills" aria-label="Skills"></a>
+    <a href="#services" class="dot" data-section="services" aria-label="Services"></a>
+    <a href="#work" class="dot" data-section="work" aria-label="Work"></a>
+    <a href="#gallery" class="dot" data-section="gallery" aria-label="Projects"></a>
+    <a href="#contact" class="dot" data-section="contact" aria-label="Contact"></a>
+  </nav>
 
   <script src="script.js?v=20260809a" defer></script>
 </body>

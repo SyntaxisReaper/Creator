@@ -1,5 +1,6 @@
 // Ritesh Kumar Mishra — Portfolio Interactions
 (function () {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const root = document.documentElement;
   const body = document.body;
   const yearEl = document.getElementById('year');
@@ -149,20 +150,71 @@
     });
   }
 
+  // Inline Form Validation logic
+  const validators = {
+    email: {
+      test: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      message: 'Please enter a valid email address'
+    },
+    required: {
+      test: (value) => value.trim().length > 0,
+      message: 'This field is required'
+    },
+    minLength: (min) => ({
+      test: (value) => value.trim().length >= min,
+      message: `Please enter at least ${min} characters`
+    })
+  };
+
+  function attachValidation(fieldEl, rules) {
+    if (!fieldEl) return () => true;
+    const wrapper = fieldEl.closest('.form-field');
+    if (!wrapper) return () => true;
+    const errorEl = wrapper.querySelector('.field-error');
+
+    const validate = () => {
+      for (const rule of rules) {
+        if (!rule.test(fieldEl.value)) {
+          wrapper.classList.add('invalid');
+          wrapper.classList.remove('valid');
+          if (errorEl) errorEl.textContent = rule.message;
+          return false;
+        }
+      }
+      wrapper.classList.remove('invalid');
+      wrapper.classList.add('valid');
+      return true;
+    };
+
+    fieldEl.addEventListener('blur', validate);
+    fieldEl.addEventListener('input', () => {
+      if (wrapper.classList.contains('invalid')) validate();
+    });
+
+    return validate;
+  }
+
   // Contact form -> fetch API handler
   const form = document.getElementById('contact-form');
   const status = document.getElementById('form-status');
   if (form) {
+    const contactName = document.getElementById('contact-name');
+    const contactEmail = document.getElementById('contact-email');
+    const contactMessage = document.getElementById('contact-message');
+
+    const validateName = attachValidation(contactName, [validators.required]);
+    const validateContactEmail = attachValidation(contactEmail, [validators.required, validators.email]);
+    const validateMessage = attachValidation(contactMessage, [validators.required, validators.minLength(10)]);
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const isValid = [validateName(), validateContactEmail(), validateMessage()].every(Boolean);
+      if (!isValid) return;
+
       const name = form.name.value.trim();
       const email = form.email.value.trim();
       const message = form.message.value.trim();
-
-      if (!name || !email || !message) {
-        if (status) status.textContent = 'Please fill in all fields.';
-        return;
-      }
 
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
@@ -772,13 +824,20 @@
   const newsletterBtn = document.getElementById('newsletter-btn');
 
   if (newsletterForm) {
+    const validateNewsletterEmail = attachValidation(newsletterEmail, [
+      validators.required,
+      validators.email
+    ]);
+
     newsletterForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (!validateNewsletterEmail()) return;
+
       const email = newsletterEmail.value.trim();
       if (!email) return;
 
       newsletterBtn.disabled = true;
-      newsletterBtn.textContent = 'Subscribing...';
+      newsletterBtn.querySelector('span').textContent = 'Subscribing...';
       newsletterMessage.textContent = '';
       newsletterMessage.style.color = 'var(--muted)';
 
@@ -804,7 +863,7 @@
         newsletterMessage.textContent = 'Network error. Please try again.';
       } finally {
         newsletterBtn.disabled = false;
-        newsletterBtn.textContent = 'Subscribe';
+        newsletterBtn.querySelector('span').textContent = 'Subscribe';
       }
     });
 
@@ -813,6 +872,62 @@
       el.addEventListener('mouseenter', () => body.classList.add('cursor-hover'));
       el.addEventListener('mouseleave', () => body.classList.remove('cursor-hover'));
     });
+  }
+
+  /* ── UX Polish Pass Elements ─────────────────────────────────────────── */
+
+  // Copy Email Button
+  const copyEmailBtn = document.getElementById('copy-email-btn');
+  if (copyEmailBtn) {
+    copyEmailBtn.addEventListener('click', async (e) => {
+      const emailTextEl = document.getElementById('email-text');
+      const email = emailTextEl.textContent.trim();
+      const btn = e.currentTarget;
+
+      try {
+        await navigator.clipboard.writeText(email);
+        const original = btn.textContent;
+        btn.textContent = '✅';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    });
+  }
+
+  // Back to Top & Section Dots
+  const backToTopBtn = document.getElementById('back-to-top');
+  const sections = ['home', 'about', 'journey', 'skills', 'services', 'work', 'gallery', 'contact']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  const dots = document.querySelectorAll('.section-dots .dot');
+
+  if (backToTopBtn) {
+    window.addEventListener('scroll', () => {
+      backToTopBtn.classList.toggle('visible', window.scrollY > 600);
+    }, { passive: true });
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  if (sections.length && dots.length) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          dots.forEach(dot => {
+            dot.classList.toggle('active', dot.dataset.section === id);
+          });
+        }
+      });
+    }, { threshold: 0.4 });
+    sections.forEach(section => observer.observe(section));
   }
 
 })();
