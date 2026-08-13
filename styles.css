@@ -699,13 +699,16 @@ body {
   margin-top: 10px;
 }
 
-.field {
+.field,
+.form-field {
   display: grid;
   gap: 6px;
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.form-field input,
+.form-field textarea {
   width: 100%;
   padding: 12px 14px;
   border-radius: 12px;
@@ -717,7 +720,9 @@ body {
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.form-field input:focus,
+.form-field textarea:focus {
   border-color: rgba(255, 255, 255, .45);
   background: rgba(255, 255, 255, .1);
   box-shadow: 0 0 0 4px rgba(167, 139, 250, .18);
